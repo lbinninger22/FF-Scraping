@@ -47,6 +47,10 @@ for filename in os.listdir(standings_directory):
                         elif int(value) <= int(num_owners/2):
                             aggregated_data[manager_name]["Playoffs"] += 1
 
+# After looping through all files, the number of seasons is final
+# Average DraftPosition over the number of seasons
+for manager_name in aggregated_data:
+    aggregated_data[manager_name]["DraftPosition"] = round(aggregated_data[manager_name]["DraftPosition"] / aggregated_data[manager_name]["Seasons"], 1)
 
 # Convert dict_keys to a list
 column_names = list(aggregated_data.values())[0].keys()
