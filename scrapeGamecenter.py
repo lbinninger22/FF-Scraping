@@ -74,7 +74,7 @@ def getrow(teamId, week, longest_bench) :
 	player_totals = soup.find('div', id = 'teamMatchupBoxScore').find('div', class_ = 'teamWrap teamWrap-1').find_all('td', class_ = re.compile("statTotal"))
 	player_totals = [player.text for player in player_totals] #point totals for each player with indecies which correspond to that player's index in roster
 
-	teamtotals = soup.findAll('div', class_ = re.compile('teamTotal teamId-')) #the team's total points for the week
+	teamtotals = soup.find_all('div', class_ = re.compile('teamTotal teamId-')) #the team's total points for the week
 	ranktext = soup.find('span', class_ = re.compile('teamRank teamId-')).text
 	rank = ranktext[ranktext.index('(') + 1: ranktext.index(')')] #the team's rank in the standings
 	rosterandtotals = [] #alternating player names and their corresponding weekly point totals
