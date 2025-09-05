@@ -6,19 +6,20 @@ from urllib.request import urlopen
 import re
 import requests
 from cookieString import cookies
-from utils import get_number_of_owners, setup_output_folders
+from utils import get_team_ids_for_season, setup_output_folders
 from constants import leagueID, leagueStartYear, leagueEndYear, gamecenter_directory
 
-#teams that don't fill all their starting roster spots for a week will have a longer bench
-#the more roster spots left unfilled, the more bench players that team will have
-#this method gets the teamid of the team with the longest bench for the week as well as the length of their bench
+# teams that don't fill all their starting roster spots for a week will have a longer bench
+# the more roster spots left unfilled, the more bench players that team will have
+# this method gets the teamid of the team with the longest bench for the week as well as the length of their bench
 def get_longest_bench(week) :
 	longest_bench_data = [0, 0]
-	for i in range (1, number_of_owners + 1) :
-		page = requests.get('https://fantasy.nfl.com/league/' + leagueID + '/history/' + season + '/teamgamecenter?teamId=' + str(i) + '&week=' + str(week), cookies=cookies)
+	for i in range (0, len(team_ids)) :
+		page = requests.get('https://fantasy.nfl.com/league/' + leagueID + '/history/' + season + '/teamgamecenter?teamId=' + str(team_ids[i]) + '&week=' + str(week), cookies=cookies)
 		soup = bs(page.text, 'html.parser')
-		print(i)
-		#page.close()
+
+		# print the progress. simple counter from 1 to number_of_owners
+		print(i+1)
 
 		bench_div = soup.find('div', id='tableWrapBN-1')
 		# in the edge case that a team has no bench players, this div might not exist, so we just set an empty list
@@ -29,12 +30,12 @@ def get_longest_bench(week) :
 
 		# determine whether the current team has the longest bench
 		if(len(bench) > longest_bench_data[0]) :
-			longest_bench_data = [len(bench), i]
+			longest_bench_data = [len(bench), team_ids[i]]
 
 	return longest_bench_data
 
-#generates the header for the csv file for the week
-#different weeks can have different headers if players do not fill all their starting roster spots
+# generates the header for the csv file for the week
+# different weeks can have different headers if players do not fill all their starting roster spots
 def get_header(week, longest_bench_teamID) :
 	url = "https://fantasy.nfl.com/league/" + leagueID + "/history/" + season + "/teamgamecenter?teamId=" +str(longest_bench_teamID) + "&week=" + str(week)
 	page = requests.get(url, cookies=cookies)
@@ -56,8 +57,8 @@ def get_header(week, longest_bench_teamID) :
 
 	return header
 
-#gets one row of the csv file
-#each row is the weekly data for one team in the league
+# gets one row of the csv file
+# each row is the weekly data for one team in the league
 def getrow(teamId, week, longest_bench) : 
 
 	#loads gamecenter page as soup
@@ -122,20 +123,32 @@ for s in range(leagueStartYear, leagueEndYear):
 
 	page = requests.get('https://fantasy.nfl.com/league/' + leagueID + '/history/' + season + '/teamgamecenter?teamId=1&week=1', cookies=cookies)
 	soup = bs(page.text, 'html.parser')
-	season_length = len(soup.find_all('li', class_ = re.compile('ww ww-'))) #determines how may unique csv files are created, total number of weeks in the season 
-	number_of_owners = get_number_of_owners(leagueID, season)
+	season_length = len(soup.find_all('li', class_ = re.compile('ww ww-'))) # determines how may unique csv files are created, total number of weeks in the season 
+	team_ids = get_team_ids_for_season(leagueID, season)
 
-	print("Number of Owners: " + str(number_of_owners))
+	print("Number of Owners: " + str(len(team_ids)))
 	print("Season Length: " + str(season_length))
 
-	#Iterate through each week of the season, creating a new csv file every loop
+	# Iterate through each week of the season, creating a new csv file every loop
 	for i in range(1, season_length + 1): 
-		longest_bench = get_longest_bench(i) #a list containing the length of the longest bench followed by the ID of the team with the longest bench
-		header = get_header(i, longest_bench[1]) #header for the csv
+		# get a list containing the length of the longest bench followed by the ID of the team with the longest bench
+		longest_bench = get_longest_bench(i)
+
+		# get the header row for the csv
+		header = get_header(i, longest_bench[1])
+
+		# write to the file for the week
 		with open(gamecenter_directory + season + '/' + str(i) + '.csv', 'w', newline='') as f :
 			writer = csv.writer(f)
-			writer.writerow(header) #writes header as the first line in the new csv file
-			for j in range(1, number_of_owners + 1) : #iterates through every team owner
-				writer.writerow(getrow(str(j), str(i), longest_bench[0])) #writes a row for each owner in the csv
-		print("Week " + str(i) + " Complete")
-	print("Done")
+			writer.writerow(header) # writes header as the first line in the new csv file
+
+			# iterate through every team owner
+			for team_id in team_ids:
+				# write a row for each owner in the csv
+				writer.writerow(getrow(str(team_id), str(i), longest_bench[0]))
+		
+		# print progress with completion of each week
+		print("Week " + str(i) + " complete")
+	
+	# print progress with completion of each season
+	print("Season " + season + " complete")
