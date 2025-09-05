@@ -29,8 +29,10 @@ for year in os.listdir(gamecenter_directory):
                     # Calculate the margin of victory
                     margin = float(row['Total']) - float(row['Opponent Total'])
                     if margin > largest_margin:
+                        print("Week " + filename[:-4] + " " + row['Owner'] + " has a new blowout with a " + f"{margin:.2f}" + " point win over " + row['Opponent'])
                         largest_margin = margin
                     if margin > 0 and margin < narrowest_margin:
+                        print("Week " + filename[:-4] + " " + row['Owner'] + " has a new narrow victory with a " + f"{margin:.2f}" + " point win over " + row['Opponent'])
                         narrowest_margin = margin
 
 
