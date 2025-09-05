@@ -24,7 +24,7 @@ for filename in os.listdir(standings_directory):
 
                 # Initialize the manager's data if it doesn't exist
                 if manager_name not in aggregated_data:
-                    cols = ["PointsFor","PointsAgainst","Moves","Trades","Wins","Losses","Ties","Championships","Playoffs","Sackos","DraftPosition"]
+                    cols = ["PointsFor","PointsAgainst","Moves","Trades","Wins","Losses","Ties","Championships","Finals","Playoffs","Sackos","DraftPosition"]
                     aggregated_data[manager_name] = {col: 0 for col in cols}
                     aggregated_data[manager_name]["Seasons"] = 1
                 else:
@@ -42,8 +42,13 @@ for filename in os.listdir(standings_directory):
                         if int(value) == 1:
                             aggregated_data[manager_name]["Playoffs"] += 1
                             aggregated_data[manager_name]["Championships"] += 1
+                            aggregated_data[manager_name]["Finals"] += 1
+                        elif int(value) == 2:
+                            aggregated_data[manager_name]["Playoffs"] += 1
+                            aggregated_data[manager_name]["Finals"] += 1
                         elif int(value) == num_owners:
                             aggregated_data[manager_name]["Sackos"] += 1
+                        # TODO: not every league has the top half in playoffs, e.g. some have 6/8 teams
                         elif int(value) <= int(num_owners/2):
                             aggregated_data[manager_name]["Playoffs"] += 1
 
