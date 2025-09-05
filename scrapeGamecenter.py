@@ -19,9 +19,17 @@ def get_longest_bench(week) :
 		soup = bs(page.text, 'html.parser')
 		print(i)
 		#page.close()
-		bench_length = len(soup.find('div', id = 'tableWrapBN-1').find_all('td', class_ = 'playerNameAndInfo'))
-		if(bench_length > longest_bench_data[0]) :
-			longest_bench_data = [bench_length, i]
+
+		bench_div = soup.find('div', id='tableWrapBN-1')
+		# in the edge case that a team has no bench players, this div might not exist, so we just set an empty list
+		if bench_div:
+			bench = bench_div.find_all('td', class_='playerNameAndInfo')
+		else:
+			bench = []
+
+		# determine whether the current team has the longest bench
+		if(len(bench) > longest_bench_data[0]) :
+			longest_bench_data = [len(bench), i]
 
 	return longest_bench_data
 
@@ -61,11 +69,17 @@ def getrow(teamId, week, longest_bench) :
 
 	starters = soup.find('div', id = 'tableWrap-1').find_all('td', class_ = 'playerNameAndInfo')
 	starters = [starter.text for starter in starters]
-	bench = soup.find('div', id = 'tableWrapBN-1').find_all('td', class_ = 'playerNameAndInfo')
-	bench = [benchplayer.text for benchplayer in bench]
 
-	#in order to keep the row properly aligned, bench spots that are filled by another team
-	#but not by this team are filled with a -
+	bench_div = soup.find('div', id='tableWrapBN-1')
+	# in the edge case that a team has no bench players, this div might not exist, so we just set an empty list
+	if bench_div:
+		bench = bench_div.find_all('td', class_='playerNameAndInfo')
+		bench = [benchplayer.text for benchplayer in bench]
+	else:
+		bench = []
+	
+	# in order to keep the row properly aligned, bench spots that are filled by another team
+	# but not by this team are filled with a -
 	while len(bench) < longest_bench: 
 		bench.append('-')
 
