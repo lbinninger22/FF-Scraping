@@ -93,13 +93,13 @@ def getrow(teamId, week, longest_bench) :
 	rank = ranktext[ranktext.index('(') + 1: ranktext.index(')')] #the team's rank in the standings
 	rosterandtotals = [] #alternating player names and their corresponding weekly point totals
 	for i in range(len(roster)) :
-		 rosterandtotals.append(roster[i])
+		rosterandtotals.append(roster[i])
 
-		 #checks if there is a point total corresponding to the player, if not that spot is filled with a -
-		 try:
-		 	rosterandtotals.append(player_totals[i])
-		 except:
-		 	rosterandtotals.append('-')
+		#checks if there is a point total corresponding to the player, if not that spot is filled with a -
+		try:
+			rosterandtotals.append(player_totals[i])
+		except:
+			rosterandtotals.append('-')
 
 	#try except statement is for the situation where the league member would not have an opponent for the week
 	#in this case the Opponent and Opponent Total columns are filled with -
