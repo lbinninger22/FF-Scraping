@@ -1,7 +1,7 @@
 import os
 import csv
 
-from utils import get_number_of_owners
+from utils import get_team_ids_for_season
 from constants import gamecenter_directory, leagueID
 
 # Script which iterates over all games, and finds the biggest blowouts, and narrowest victories.
@@ -12,7 +12,7 @@ narrowest_margin = 1000
 for year in os.listdir(gamecenter_directory):
     print(year)
     path = gamecenter_directory + year + '/'
-    num_owners = get_number_of_owners(leagueID, path)
+    # num_owners = len(get_team_ids_for_season(leagueID, path))
     
     # Iterate through each week
     for filename in os.listdir(path):
