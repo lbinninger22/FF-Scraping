@@ -56,6 +56,9 @@ for filename in os.listdir(standings_directory):
 # Average DraftPosition over the number of seasons
 for manager_name in aggregated_data:
     aggregated_data[manager_name]["DraftPosition"] = round(aggregated_data[manager_name]["DraftPosition"] / aggregated_data[manager_name]["Seasons"], 1)
+    # also round PointsFor and PointsAgainst to 2 decimal places
+    aggregated_data[manager_name]["PointsFor"] = round(aggregated_data[manager_name]["PointsFor"], 2)
+    aggregated_data[manager_name]["PointsAgainst"] = round(aggregated_data[manager_name]["PointsAgainst"], 2)
 
 # Convert dict_keys to a list
 column_names = list(aggregated_data.values())[0].keys()
