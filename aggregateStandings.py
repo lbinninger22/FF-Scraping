@@ -1,7 +1,7 @@
 import csv
 import os
 
-from utils import get_number_of_owners
+from utils import get_team_ids_for_season
 from constants import leagueID, standings_directory
 
 # Aggregates scraped standings data into a single CSV file
@@ -17,7 +17,7 @@ for filename in os.listdir(standings_directory):
         filepath = os.path.join(standings_directory, filename)
         with open(filepath, 'r', newline='') as file:
             reader = csv.DictReader(file)
-            num_owners = get_number_of_owners(leagueID, filename[:-4])
+            num_owners = len(get_team_ids_for_season(leagueID, filename[:-4]))
             # Iterate through each row in the CSV file
             for row in reader:
                 manager_name = row["ManagerName"]
